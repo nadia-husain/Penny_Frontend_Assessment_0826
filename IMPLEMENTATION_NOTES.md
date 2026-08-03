@@ -8,7 +8,8 @@
 
 bug fix:
 - in diff.util.ts, i fixed the change detection as it used to only report the changes made to the unit price
-by adding the quantity field to the change condition as it was added in the test in diff.spec.ts  
+by adding the quantity field to the change condition as it was added in the test in diff.spec.ts 
+- in cr-detail.compotent.ts, i added the canApprovePolicy so users can only approve based on their permissions. 
 
 ## 2. Component & state model
 <!-- The screens, the view-state each component exposes, and how data flows from the mock API into the
