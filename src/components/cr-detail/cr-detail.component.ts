@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CrApiService } from '../../api/cr-api.service';
 import { SessionService } from '../../session/session.service';
 import { CrDetail, TimelineEntry } from '../../models/cr.models';
@@ -14,6 +14,12 @@ import { canApprovePolicy } from '../../common/permissions';
  * permission-aware Approve/Reject actions. `load`, the diff binding, and the template skeleton are
  * provided; the timeline ordering, permission gating, actions, and reject validation are yours.
  */
+
+// prevents user from entering whitespace only on rejectio reason field 
+function notBlank(control: AbstractControl): ValidationErrors | null {
+  return control.value?.trim().length ? null : { blank: true };
+}
+
 @Component({
 	selector: 'app-cr-detail',
 	standalone: true,
@@ -27,7 +33,7 @@ export class CrDetailComponent implements OnInit {
 	submitting = false;
 	actionError?: string;
 	// TODO: add validation so the form is invalid until a reason is entered.
-	rejectControl = new FormControl('', { nonNullable: true });
+	rejectControl = new FormControl('', { nonNullable: true, validators: [notBlank] });
 
 	constructor(private readonly api: CrApiService, private readonly session: SessionService) {}
 
