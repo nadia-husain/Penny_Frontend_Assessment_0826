@@ -30,4 +30,35 @@ describe('CrListComponent', () => {
 		expect(fixture.nativeElement.querySelector('.cr-list__empty')).not.toBeNull();
 		expect(fixture.nativeElement.querySelector('.cr-list__table')).toBeNull();
 	});
+
+	it('shows all rows when the status filter is ALL', async () => {
+		const fixture = await render(users.approver);
+		const select: HTMLSelectElement = fixture.nativeElement.querySelector('.cr-list__filter');
+		expect(select.value).toBe('ALL');
+		expect(fixture.nativeElement.querySelectorAll('.cr-list__row').length).toBe(3);
+	});
+
+	it('narrows rows to the selected status', async () => {
+		const fixture = await render(users.approver);
+		const select: HTMLSelectElement = fixture.nativeElement.querySelector('.cr-list__filter');
+
+		select.value = 'PENDING_APPROVAL';
+		select.dispatchEvent(new Event('change'));
+		fixture.detectChanges();
+
+		const rows: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('.cr-list__row');
+		expect(rows.length).toBe(1); // org-alpha: only CR-1 is PENDING_APPROVAL
+		expect(rows[0].textContent).toContain('CR-1');
+	});
+
+	it('shows no rows when the filter matches nothing in the org', async () => {
+		const fixture = await render(users.approver);
+		const select: HTMLSelectElement = fixture.nativeElement.querySelector('.cr-list__filter');
+
+		select.value = 'CANCELLED'; // no org-alpha CR is CANCELLED
+		select.dispatchEvent(new Event('change'));
+		fixture.detectChanges();
+
+		expect(fixture.nativeElement.querySelectorAll('.cr-list__row').length).toBe(0);
+	});
 });
