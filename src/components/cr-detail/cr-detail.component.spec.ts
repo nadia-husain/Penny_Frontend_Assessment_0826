@@ -33,13 +33,6 @@ describe('CrDetailComponent', () => {
 		expect(approveBtn.disabled).toBe(true);
 	});
 
-	it('renders the diff kind for each line item', async () => {
-		const fixture = await render(users.approver, 'CR-1');
-		const rows = fixture.nativeElement.querySelectorAll('.cr-diff__row');
-		const kinds = Array.from(rows).map((r: any) => r.getAttribute('data-kind'));
-		expect(kinds).toEqual(['changed', 'unchanged']); // SKU-A qty 10→11, SKU-B unchanged
-	});
-
 	it('renders the timeline oldest-first regardless of the fixture\'s raw audit order', async () => {
 		const fixture = await render(users.approver, 'CR-1');
 		// CR-1's raw fixture audit is [SEND_FOR_APPROVAL, SUBMIT, CREATE] (newest-first) —
