@@ -1,8 +1,5 @@
 # Implementation Notes
 
-> Fill this in as part of your submission. 1–2 pages, bullet points are fine. Delete these
-> instructions before submitting.
-
 ## 1. What I changed
 <!-- Grouped by task: bugs fixed and features implemented (component + template). -->
 
@@ -53,15 +50,11 @@ CrListComponent
 
 | Invariant | How / where |
 |---|---|
-| Reject action cannot be submitted with an empty or whitespace-only reason | notBlank + Validators.required 
-  on rejectControl in cr-detail.component.ts; submit button uses [disabled]="rejectControl.invalid" |
-| Timeline is always displayed oldest-first, regardless of the order entries arrive in from the API | 
-  timeline getter in cr-detail.component.ts sorts a copy of detail.audit by `at` before returning it |
+| Reject action cannot be submitted with an empty or whitespace-only reason | notBlank + Validators.required on rejectControl in cr-detail.component.ts; submit button uses [disabled]="rejectControl.invalid" |
+| Timeline is always displayed oldest-first, regardless of the order entries arrive in from the API | timeline getter in cr-detail.component.ts sorts a copy of detail.audit by `at` before returning it |
 | The list only shows rows matching the selected status filter | visibleRows getter in cr-list.component.ts |
-| Approve cannot be triggered unless the current user is permitted and the CR is in Pending Approval status | 
-  approve() re-checks canApprove and detail before calling the API, in addition to the template disabling the button |
-| Reject cannot be triggered unless the CR is in Pending Approval status and the reason is valid | reject() re-checks canReject,
-  detail, and rejectControl.invalid before calling the API, in addition to the template disabling the button |
+| Approve cannot be triggered unless the current user is permitted and the CR is in Pending Approval status | approve() re-checks canApprove and detail before calling the API, in addition to the template disabling the button |
+| Reject cannot be triggered unless the CR is in Pending Approval status and the reason is valid | reject() re-checks canReject detail, and rejectControl.invalid before calling the API, in addition to the template disabling the button |
 
 ## 4. Testing strategy
 <!-- What you tested (component/DOM vs pure) and why; what you deliberately skipped given the budget. -->
