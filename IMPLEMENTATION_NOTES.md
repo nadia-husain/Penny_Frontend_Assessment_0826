@@ -59,7 +59,16 @@ CrListComponent
 ## 4. Testing strategy
 <!-- What you tested (component/DOM vs pure) and why; what you deliberately skipped given the budget. -->
 
--
+- Focused tests on the features/fixes I implemented, not on provided/pre-existing code.
+- Tested through the DOM (querySelector + click/input/change events) rather than calling component 
+  methods directly. This exercises the actual template bindings (*ngIf, [disabled], [formControl]), 
+  not just the underlying TypeScript logic.
+- CrDetailComponent: covered timeline ordering, approve success/failure, reject validation (blank/valid), 
+  and reject success/failure. Failures were simulated deterministically via the mock API's failNext flag.
+- CrListComponent: covered visibleRows showing all rows on 'ALL', narrowing to matching rows, and showing 
+  zero rows when nothing matches the selected status.
+- Did not add a component-level test for the diff getter/binding, since it was provided code rather than 
+  something I implemented. computeDiff() itself is already covered by the pre-existing diff.spec.ts.
 
 ## 5. Assumptions
 <!-- Where the requirements left room for interpretation, the calls you made and why. -->
@@ -68,7 +77,9 @@ CrListComponent
   a custom notBlank validator for this.
 
 ## 6. Where I used AI
--
+
+- Mostly used Claude to help write test cases and to understand Angular components faster, since I have 
+  no prior experience with Angular.
 
 ## 7. What I'd improve with more time
 -
