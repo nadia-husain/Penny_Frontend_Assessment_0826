@@ -16,6 +16,8 @@ bug fix:
 feature:
 - in cr-detail.component.ts, i added validation to rejectControl so the form stays invalid until a non-blank 
   reason is entered (wrote a custom notBlank validator).
+- in cr-list.component.ts, implemented visibleRows to filter the loaded rows by the selected statusFilter 
+  ('ALL' shows everything unfiltered).
 
 ## 2. Component & state model
 <!-- The screens, the view-state each component exposes, and how data flows from the mock API into the
@@ -30,6 +32,10 @@ CrDetailComponent
 - timeline: TimelineEntry[] (getter) — returns a sorted copy of detail.audit, oldest-first by the `at` 
   timestamp; feeds the approval timeline view in the template.
 
+CrListComponent
+- statusFilter: CrStatus | 'ALL' — bound to the status dropdown; drives which rows are shown.
+- visibleRows: CrSummary[] (getter) — the loaded rows narrowed by statusFilter; feeds the rendered table.
+
 ## 3. Invariants I keep
 <!-- Which properties the UI guarantees, and where in the component/template each is enforced. -->
 
@@ -39,6 +45,7 @@ CrDetailComponent
   on rejectControl in cr-detail.component.ts; submit button uses [disabled]="rejectControl.invalid" |
 - | Timeline is always displayed oldest-first, regardless of the order entries arrive in from the API | 
   timeline getter in cr-detail.component.ts sorts a copy of detail.audit by `at` before returning it |
+| The list only shows rows matching the selected status filter | visibleRows getter in cr-list.component.ts |
 
 ## 4. Testing strategy
 <!-- What you tested (component/DOM vs pure) and why; what you deliberately skipped given the budget. -->
