@@ -84,7 +84,7 @@ export class CrDetailComponent implements OnInit {
 
 	async approve(): Promise<void> {
 		// TODO: perform the approve action through the API and reflect the outcome in the view.
-		// check if user is allowed to approve or if cr exists, if true then exit function
+		// check if user is not allowed to approve or if cr does not exist, if true then exit function
 		if (!this.canApprove || !this.detail) return;
 		
 		this.submitting = true; 
@@ -105,6 +105,23 @@ export class CrDetailComponent implements OnInit {
 	async reject(): Promise<void> {
 		// TODO: require a valid rejectControl, then perform the reject action through the API and
 		//       reflect the outcome in the view.
-		throw new Error('reject() not implemented');
+		if (!this.canReject || !this.detail || this.rejectControl.invalid) {
+			// show validation error message
+			this.rejectControl.markAsTouched();
+			return;
+		}
+
+		this.submitting = true;
+		this.actionError = undefined;
+
+		try {
+			const updated = await this.api.reject(this.session.user, this.detail.id, new Date().toISOString(), this.rejectControl.value);
+			this.state = { status: 'loaded', data: updated };
+			this.rejectControl.reset('');
+		} catch (err) {
+			this.actionError = (err as Error).message;
+		} finally {
+			this.submitting = false;
+		}
 	}
 }

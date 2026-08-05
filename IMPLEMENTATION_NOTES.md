@@ -20,6 +20,9 @@ feature:
   ('ALL' shows everything unfiltered).
 - in cr-detail.component.ts, i implemented approve() to call the API, update the view state on success, and 
   surface the error message on failure.
+- in cr-detail.component.ts, i implemented reject() to require a valid rejectControl (rejection reason) before 
+  proceeding (marking it touched if invalid, so the error message shows), then call the API and update the view 
+  state on success, resetting the reason field; surfaces the error message on failure.
 
 ## 2. Component & state model
 <!-- The screens, the view-state each component exposes, and how data flows from the mock API into the
@@ -37,6 +40,9 @@ CrDetailComponent
 - actionError?: string — set on a failed approve() call, cleared at the start of each attempt.
 - approve(): async method — guards on canApprove/detail, calls the API, then updates state to the fresh 
   CrDetail on success so canApprove/timeline/detail recompute automatically.
+- reject(): async method — guards on canReject/detail/rejectControl.invalid (marking the control touched 
+  if invalid), calls the API with the entered reason, then updates state to the fresh CrDetail and resets 
+  rejectControl on success.
 
 CrListComponent
 - statusFilter: CrStatus | 'ALL' — bound to the status dropdown; drives which rows are shown.
@@ -47,13 +53,15 @@ CrListComponent
 
 | Invariant | How / where |
 |---|---|
-- | Reject action cannot be submitted with an empty or whitespace-only reason | notBlank + Validators.required 
+| Reject action cannot be submitted with an empty or whitespace-only reason | notBlank + Validators.required 
   on rejectControl in cr-detail.component.ts; submit button uses [disabled]="rejectControl.invalid" |
-- | Timeline is always displayed oldest-first, regardless of the order entries arrive in from the API | 
+| Timeline is always displayed oldest-first, regardless of the order entries arrive in from the API | 
   timeline getter in cr-detail.component.ts sorts a copy of detail.audit by `at` before returning it |
-- | The list only shows rows matching the selected status filter | visibleRows getter in cr-list.component.ts |
-- | Approve cannot be triggered unless the current user is permitted and the CR is in Pending Approval status | 
+| The list only shows rows matching the selected status filter | visibleRows getter in cr-list.component.ts |
+| Approve cannot be triggered unless the current user is permitted and the CR is in Pending Approval status | 
   approve() re-checks canApprove and detail before calling the API, in addition to the template disabling the button |
+| Reject cannot be triggered unless the CR is in Pending Approval status and the reason is valid | reject() re-checks canReject,
+  detail, and rejectControl.invalid before calling the API, in addition to the template disabling the button |
 
 ## 4. Testing strategy
 <!-- What you tested (component/DOM vs pure) and why; what you deliberately skipped given the budget. -->
