@@ -9,6 +9,9 @@ bug fix:
 - in cr-detail.component.ts, i added the canApprovePolicy so users can only approve based on their permissions. 
 - in cr-detail.component.ts, the timeline getter returned audit entries unsorted. Fixed it to return a sorted 
   copy of the audit array, ordered oldest-first.
+- in cr-detail.component.ts, the detail view did not refresh when clicking a different row, since 
+  load() only ran once from ngOnInit(). Fixed by implementing OnChanges to call load() on every 
+  id change, guarded against firstChange to avoid a double load.
 
 feature:
 - in cr-detail.component.ts, i added validation to rejectControl so the form stays invalid until a non-blank 
