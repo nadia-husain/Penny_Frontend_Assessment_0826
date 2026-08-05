@@ -82,4 +82,7 @@ CrListComponent
   no prior experience with Angular.
 
 ## 7. What I'd improve with more time
--
+
+- Switching the "Acting as" user can leave selectedId pointing at a CR from the previous user's org, 
+  causing a "Couldn't load this change request: Not found" error until a row is clicked or Retry is 
+  pressed. I would fix this by having AppComponent auto-select the current user's first row after each switch.
