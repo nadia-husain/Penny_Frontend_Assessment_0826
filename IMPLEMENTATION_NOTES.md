@@ -84,6 +84,8 @@ CrListComponent
 
 - Treated whitespace-only input as invalid, since Validators.required alone does not catch " " as blank — added
   a custom notBlank validator for this.
+- Not sure if reject policy should be the same as the approve policy, meaning only those with permission to approve
+  can also reject a CR, so I left it as it is, allowing viewer user to be able to reject a CR.
 
 ## 6. Where I used AI
 
