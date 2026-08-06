@@ -141,4 +141,30 @@ describe('CrDetailComponent', () => {
 		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL'); // unchanged on failure
 		expect(fixture.componentInstance.rejectControl.value).toBe('Budget not approved'); // not reset on failure
 	});
+
+	it('emits changed after a successful approve', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const changedSpy = jest.spyOn(fixture.componentInstance.changed, 'emit');
+
+		const approveBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__approve');
+		approveBtn.click();
+		await flush();
+		fixture.detectChanges();
+
+		expect(changedSpy).toHaveBeenCalled();
+	});
+
+	it('does not emit changed when approve fails', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const api = TestBed.inject(CrApiService);
+		api.failNext = true;
+		const changedSpy = jest.spyOn(fixture.componentInstance.changed, 'emit');
+
+		const approveBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__approve');
+		approveBtn.click();
+		await flush();
+		fixture.detectChanges();
+
+		expect(changedSpy).not.toHaveBeenCalled();
+	});
 });

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, OnChanges, OnInit, SimpleChanges, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CrApiService } from '../../api/cr-api.service';
@@ -28,6 +28,8 @@ function notBlank(control: AbstractControl): ValidationErrors | null {
 })
 export class CrDetailComponent implements OnInit, OnChanges {
 	@Input() id!: string;
+	// emitted after a successful approve/reject so the list can refresh automatically 
+	@Output() changed = new EventEmitter<void>();
 
 	state: ViewState<CrDetail> = idle();
 	submitting = false;
@@ -100,6 +102,8 @@ export class CrDetailComponent implements OnInit, OnChanges {
 			// pause function until approve API is called, pass logged in user and cr details, create current date and time 
 			const updated = await this.api.approve(this.session.user, this.detail.id, new Date().toISOString()); 
 			this.state = { status: 'loaded', data: updated }; 
+			// refreshes the list to update the status in the CR row
+			this.changed.emit();
 		} catch (err) { 
 			this.actionError = (err as Error).message; 
 		} finally { 
@@ -124,6 +128,7 @@ export class CrDetailComponent implements OnInit, OnChanges {
 			const updated = await this.api.reject(this.session.user, this.detail.id, new Date().toISOString(), this.rejectControl.value);
 			this.state = { status: 'loaded', data: updated };
 			this.rejectControl.reset('');
+			this.changed.emit();
 		} catch (err) {
 			this.actionError = (err as Error).message;
 		} finally {

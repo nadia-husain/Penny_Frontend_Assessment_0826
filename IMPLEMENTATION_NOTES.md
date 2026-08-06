@@ -3,26 +3,32 @@
 ## 1. What I changed
 <!-- Grouped by task: bugs fixed and features implemented (component + template). -->
 
-bug fix:
-- in diff.util.ts, i fixed the change detection as it used to only report the changes made to the unit price
-  by adding the quantity field to the change condition as it was added in the test in diff.spec.ts.
-- in cr-detail.component.ts, i added the canApprovePolicy so users can only approve based on their permissions. 
-- in cr-detail.component.ts, the timeline getter returned audit entries unsorted. Fixed it to return a sorted 
-  copy of the audit array, ordered oldest-first.
-- in cr-detail.component.ts, the detail view did not refresh when clicking a different row, since 
-  load() only ran once from ngOnInit(). Fixed by implementing OnChanges to call load() on every 
-  id change, guarded against firstChange to avoid a double load.
+### bug fixes:
 
-feature:
-- in cr-detail.component.ts, i added validation to rejectControl so the form stays invalid until a non-blank 
-  reason is entered (wrote a custom notBlank validator).
-- in cr-list.component.ts, implemented visibleRows to filter the loaded rows by the selected statusFilter 
-  ('ALL' shows everything unfiltered).
-- in cr-detail.component.ts, i implemented approve() to call the API, update the view state on success, and 
-  surface the error message on failure.
-- in cr-detail.component.ts, i implemented reject() to require a valid rejectControl (rejection reason) before 
-  proceeding (marking it touched if invalid, so the error message shows), then call the API and update the view 
-  state on success, resetting the reason field; surfaces the error message on failure.
+Diff
+- fixed the change detection as it used to only report the changes made to the unit price by adding the quantity field to the change
+  condition as it was added in the test in diff.spec.ts.
+
+CrDetailComponent
+- added the canApprovePolicy so users can only approve based on their permissions. 
+- the timeline getter returned audit entries unsorted. Fixed it to return a sorted copy of the audit array, ordered oldest-first.
+- the detail view did not refresh when clicking a different row, since load() only ran once from ngOnInit(). Fixed by implementing
+  OnChanges to call load() on every id change, guarded against firstChange to avoid a double load.
+
+### features:
+
+CrDetailComponent
+- added validation to rejectControl so the form stays invalid until a non-blank reason is entered (wrote a custom notBlank
+  validator).
+- implemented approve() to call the API, update the view state on success, and surface the error message on failure.
+- implemented reject() to require a valid rejectControl (rejection reason) before proceeding (marking it touched if invalid, so the 
+  error message shows), then call the API and update the view state on success, resetting the reason field; surfaces the error
+  message on failure.
+- added a changed output emitted after a successful approve/reject, and wired it in app.component.html to call the list's load() via
+  a template reference, so the list refreshes immediately when an action is taken from the detail view.
+
+CrListComponent
+- implemented visibleRows to filter the loaded rows by the selected statusFilter ('ALL' shows everything unfiltered).
 
 ## 2. Component & state model
 <!-- The screens, the view-state each component exposes, and how data flows from the mock API into the
@@ -47,6 +53,8 @@ CrDetailComponent
 - reject(): async method — guards on canReject/detail/rejectControl.invalid (marking the control touched 
   if invalid), calls the API with the entered reason, then updates state to the fresh CrDetail and resets 
   rejectControl on success.
+- changed: EventEmitter<void> — emitted after a successful approve() or reject(), never on failure; lets a parent refresh other
+  views (e.g. the CR list) when this CR's state actually changes.
 
 CrListComponent
 - state: ViewState<CrSummary[]> — idle/loading/loaded/empty/error; set by load(); visibleRows derives from 
@@ -64,6 +72,7 @@ CrListComponent
 | The list only shows rows matching the selected status filter | visibleRows getter in cr-list.component.ts |
 | Approve cannot be triggered unless the current user is permitted and the CR is in Pending Approval status | approve() re-checks canApprove and detail before calling the API, in addition to the template disabling the button |
 | Reject cannot be triggered unless the CR is in Pending Approval status and the reason is valid | reject() re-checks canReject detail, and rejectControl.invalid before calling the API, in addition to the template disabling the button |
+| The list reflects an approve/reject made from the detail view without a manual refresh | CrDetailComponent emits changed only on a successful approve()/reject(); app.component.html wires (changed)="list.load()" via a template reference to CrListComponent |
 
 ## 4. Testing strategy
 <!-- What you tested (component/DOM vs pure) and why; what you deliberately skipped given the budget. -->
