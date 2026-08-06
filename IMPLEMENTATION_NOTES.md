@@ -29,6 +29,8 @@ feature:
 template. -->
 
 CrDetailComponent
+- state: ViewState<CrDetail> — idle/loading/loaded/error; set by load() and by approve()/reject() 
+  on completion; detail, diff, timeline, canApprove, and canReject all derive from state.data.
 - canApprove: boolean (getter) — true only when the loaded CR's status is 'PENDING_APPROVAL' and the current 
   session user holds an approve-scope policy (cr_a_u / cr_a_w / cr_a_o), via canApprovePolicy(); drives 
   whether the approve action is shown/enabled in the template.
@@ -36,6 +38,8 @@ CrDetailComponent
   button and show the error message.
 - timeline: TimelineEntry[] (getter) — returns a sorted copy of detail.audit, oldest-first by the `at` 
   timestamp; feeds the approval timeline view in the template.
+- diff: DiffRow[] (getter) — computes the line-item diff between baseline and proposed via computeDiff(); 
+  feeds the proposed-changes table in the template.
 - submitting: boolean — true while approve() is in flight; disables the approve action.
 - actionError?: string — set on a failed approve() call, cleared at the start of each attempt.
 - approve(): async method — guards on canApprove/detail, calls the API, then updates state to the fresh 
@@ -45,6 +49,8 @@ CrDetailComponent
   rejectControl on success.
 
 CrListComponent
+- state: ViewState<CrSummary[]> — idle/loading/loaded/empty/error; set by load(); visibleRows derives from 
+  state.data.
 - statusFilter: CrStatus | 'ALL' — bound to the status dropdown; drives which rows are shown.
 - visibleRows: CrSummary[] (getter) — the loaded rows narrowed by statusFilter; feeds the rendered table.
 
